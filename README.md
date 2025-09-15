@@ -1,0 +1,1 @@
+Dinamita POS v2 (demo real local). Abre index.html en Chrome. Guarda datos en LocalStorage. Para producción: conectar a BD + roles/login.
