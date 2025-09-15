@@ -1,24 +1,12 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dinamita POS</title>
-  <link rel="stylesheet" href="css/styles.css" />
-</head>
-<body>
+
+<!DOCTYPE html><html lang="es"><head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dinamita POS</title><link rel="stylesheet" href="css/styles.css" /></head><body>
   <div class="header">
     <div style="display:flex;align-items:center;gap:10px">
-      <img src="assets/logo.svg" alt="logo"/>
-      <div>
-        <h1>DINAMITA POS</h1>
-        <div class="small">Versión DEMO • LocalStorage</div>
-      </div>
-    </div>
-    <div style="flex:1"></div>
-    <span class="badge">Offline Ready</span>
+      <img src="assets/logo.svg" alt="logo"/><div><h1>DINAMITA POS</h1><div class="small">Versión DEMO • LocalStorage</div></div>
+    </div><div style="flex:1"></div><span class="badge">Offline Ready</span>
   </div>
-
   <div class="container">
     <div class="nav no-print">
       <button data-route="ventas" class="active">💳 Ventas</button>
@@ -28,202 +16,76 @@
       <button data-route="historial">🧾 Historial & Caja</button>
       <button data-route="config">⚙️ Configuración</button>
     </div>
-
     <div class="main">
-      <!-- VENTAS -->
       <div id="ventas" class="view">
         <div class="row">
           <div class="col" style="flex:2">
             <div class="panel">
-              <div class="toolbar">
-                <input id="searchVenta" oninput="renderVentas()" placeholder="Buscar por nombre o SKU..." />
-                <select id="filterCatVenta" onchange="renderVentas()"></select>
-              </div>
+              <div class="row"><input id="searchVenta" oninput="renderVentas()" placeholder="Buscar por nombre o SKU..." /><select id="filterCatVenta" onchange="renderVentas()"></select></div>
               <div id="ventaGrid" class="grid"></div>
             </div>
           </div>
           <div class="col cart">
             <div class="panel">
               <h2>🛒 Carrito</h2>
-              <div id="cartLines"></div>
-              <hr/>
+              <div id="cartLines"></div><hr/>
               <div class="line"><span>Subtotal</span><b id="subtotal">$0.00</b></div>
               <div class="line"><span>Impuestos</span><b id="tax">$0.00</b></div>
               <div class="line"><span>Total</span><b id="total">$0.00</b></div>
               <div class="row" style="margin-top:10px">
-                <button id="btnCobrar" class="btn ok" onclick="openCobro()" disabled>Cobrar</button>
-                <button class="btn secondary" onclick="State.cart=[];renderCart()">Vaciar</button>
+                <button id="btnCobrar" class="btn ok" onclick="confirmarVenta()" disabled>Cobrar (Efectivo)</button>
+                <button class="btn secondary" onclick="State.cart=[];drawCart()">Vaciar</button>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      <!-- CATALOGO -->
       <div id="catalogo" class="view" style="display:none">
         <div class="panel">
           <h2>📦 Catálogo de productos</h2>
-          <div class="row">
-            <div class="col"><label>SKU</label><input id="pSku" placeholder="Ej. PRO-001" /></div>
-            <div class="col"><label>Nombre</label><input id="pName" placeholder="Nombre del producto" /></div>
-          </div>
-          <div class="row">
-            <div class="col"><label>Precio</label><input id="pPrice" type="number" step="0.01" /></div>
-            <div class="col"><label>Costo</label><input id="pCost" type="number" step="0.01" /></div>
-            <div class="col"><label>Categoría</label><select id="pCategory"></select></div>
-            <div class="col"><label>Stock</label><input id="pStock" type="number" /></div>
-          </div>
-          <div class="row"><div class="col"><label>Imagen</label><input id="pImage" type="file" accept="image/*" /></div></div>
+          <div class="row"><div class="col"><label>SKU</label><input id="pSku"/></div><div class="col"><label>Nombre</label><input id="pName"/></div></div>
+          <div class="row"><div class="col"><label>Precio</label><input id="pPrice" type="number" step="0.01"/></div><div class="col"><label>Costo</label><input id="pCost" type="number" step="0.01"/></div><div class="col"><label>Categoría</label><select id="pCategory"></select></div><div class="col"><label>Stock</label><input id="pStock" type="number"/></div></div>
+          <div class="row"><div class="col"><label>Imagen</label><input id="pImage" type="file" accept="image/*"/></div></div>
           <input id="pId" type="hidden"/>
-          <div class="row">
-            <button class="btn" onclick="saveProduct()">Guardar producto</button>
-            <button class="btn secondary" onclick="clearProdForm()">Limpiar</button>
-            <button class="btn warn" onclick="exportProductosCSV()">Exportar CSV</button>
-            <label class="btn secondary" for="impProd">Importar CSV</label>
-            <input id="impProd" class="no-print" type="file" accept=".csv" style="display:none" onchange="importProductosCSV(this.files[0])"/>
-          </div>
+          <div class="row"><button class="btn" onclick="saveProduct()">Guardar producto</button><button class="btn secondary" onclick="clearProd()">Limpiar</button></div>
         </div>
         <div class="panel" style="margin-top:12px">
-          <table class="table">
-            <thead><tr><th>SKU</th><th>Nombre</th><th>Categoría</th><th>Precio</th><th>Stock</th><th></th></tr></thead>
-            <tbody id="catBody"></tbody>
-          </table>
+          <table class="table"><thead><tr><th>SKU</th><th>Nombre</th><th>Categoría</th><th>Precio</th><th>Stock</th><th></th></tr></thead><tbody id="catBody"></tbody></table>
         </div>
       </div>
-
-      <!-- INVENTARIO -->
       <div id="inventario" class="view" style="display:none">
-        <div class="panel">
-          <h2>📊 Inventario</h2>
-          <table class="table">
-            <thead><tr><th>SKU</th><th>Producto</th><th>Categoría</th><th>Stock</th><th>Ajustar</th></tr></thead>
-            <tbody id="invBody"></tbody>
-          </table>
+        <div class="panel"><h2>📊 Inventario</h2>
+          <table class="table"><thead><tr><th>SKU</th><th>Producto</th><th>Categoría</th><th>Stock</th><th>Ajustar</th></tr></thead><tbody id="invBody"></tbody></table>
         </div>
       </div>
-
-      <!-- CLIENTES -->
       <div id="clientes" class="view" style="display:none">
-        <div class="panel">
-          <h2>👤 Clientes</h2>
-          <div class="row">
-            <div class="col"><label>Nombre</label><input id="cName"/></div>
-            <div class="col"><label>Teléfono</label><input id="cPhone"/></div>
-            <div class="col"><label>Email</label><input id="cEmail"/></div>
-          </div>
-          <div class="row">
-            <div class="col"><label>Vigencia de membresía</label><input id="cVig" type="date"/></div>
-            <div class="col" style="display:flex;align-items:center;gap:10px;margin-top:18px">
-              <label><input type="checkbox" id="cCert"/> Certificado médico</label>
-              <label><input type="checkbox" id="cAuto"/> Entrena por su cuenta</label>
-            </div>
-          </div>
+        <div class="panel"><h2>👤 Clientes</h2>
+          <div class="row"><div class="col"><label>Nombre</label><input id="cName"/></div><div class="col"><label>Teléfono</label><input id="cPhone"/></div><div class="col"><label>Email</label><input id="cEmail"/></div></div>
+          <div class="row"><div class="col"><label>Vigencia de membresía</label><input id="cVig" type="date"/></div></div>
           <input id="cId" type="hidden"/>
-          <div class="row">
-            <button class="btn" onclick="saveCliente()">Guardar</button>
-            <button class="btn secondary" onclick="clearClienteForm()">Limpiar</button>
-            <button class="btn warn" onclick="exportClientesCSV()">Exportar CSV</button>
-          </div>
+          <div class="row"><button class="btn" onclick="saveCliente()">Guardar</button><button class="btn secondary" onclick="clearCliente()">Limpiar</button></div>
         </div>
         <div class="panel" style="margin-top:12px">
-          <table class="table">
-            <thead><tr><th>Nombre</th><th>Teléfono</th><th>Email</th><th>Vigencia</th><th></th></tr></thead>
-            <tbody id="cliBody"></tbody>
-          </table>
+          <table class="table"><thead><tr><th>Nombre</th><th>Teléfono</th><th>Email</th><th>Vigencia</th><th></th></tr></thead><tbody id="cliBody"></tbody></table>
         </div>
       </div>
-
-      <!-- HISTORIAL & CAJA -->
       <div id="historial" class="view" style="display:none">
-        <div class="panel">
-          <h2>🧾 Historial de ventas</h2>
-          <div class="row" style="align-items:center;margin-bottom:8px">
-            <div class="col"><b>Total de hoy:</b> <span id="totalHoy">$0.00</span></div>
-            <div style="flex:1"></div>
-            <button class="btn warn" onclick="exportVentasCSV()">Exportar CSV</button>
-            <button class="btn secondary" onclick="corteX()">Corte X</button>
-            <button class="btn secondary" onclick="corteZ()">Corte Z</button>
-          </div>
-          <table class="table">
-            <thead><tr><th>Folio</th><th>Fecha</th><th>Cliente</th><th>Total</th><th>Ticket</th></tr></thead>
-            <tbody id="hisBody"></tbody>
-          </table>
-        </div>
-
-        <div class="panel" style="margin-top:12px">
-          <h2>💼 Caja (arqueo y movimientos)</h2>
-          <div class="row">
-            <div class="col"><label>Tipo</label><select id="cType"><option>Entrada</option><option>Salida</option></select></div>
-            <div class="col"><label>Monto</label><input id="cAmount" type="number" step="0.01"/></div>
-            <div class="col"><label>Nota</label><input id="cNote"/></div>
-          </div>
-          <div class="row"><button class="btn" onclick="addMovimientoCaja()">Agregar movimiento</button></div>
-          <div class="row" style="align-items:center;margin-top:6px"><div class="col"><b>Saldo en caja:</b> <span id="saldoCaja">$0.00</span></div></div>
-          <table class="table" style="margin-top:8px">
-            <thead><tr><th>Fecha</th><th>Tipo</th><th>Monto</th><th>Nota</th></tr></thead>
-            <tbody id="cashBody"></tbody>
-          </table>
+        <div class="panel"><h2>🧾 Historial de ventas</h2>
+          <div class="row" style="align-items:center;margin-bottom:8px"><div class="col"><b>Total de hoy:</b> <span id="totalHoy">$0.00</span></div></div>
+          <table class="table"><thead><tr><th>Folio</th><th>Fecha</th><th>Cliente</th><th>Total</th><th>Ticket</th></tr></thead><tbody id="hisBody"></tbody></table>
         </div>
       </div>
-
-      <!-- CONFIG -->
       <div id="config" class="view" style="display:none">
-        <div class="panel">
-          <h2>⚙️ Configuración</h2>
-          <div class="row">
-            <div class="col"><label>Nombre del negocio</label><input id="bName"/></div>
-            <div class="col"><label>Dirección</label><input id="bAddr"/></div>
-          </div>
-          <div class="row">
-            <div class="col"><label>Teléfono</label><input id="bPhone"/></div>
-            <div class="col"><label>Footer del ticket</label><input id="bFooter"/></div>
-          </div>
-          <div class="row">
-            <div class="col"><label>Impuesto (%)</label><input id="bTax" type="number" step="0.01"/></div>
-            <div class="col"><label>Moneda</label><select id="bCurrency"><option>MXN</option><option>USD</option></select></div>
-            <div class="col"><label><input type="checkbox" id="b58mm"/> Ticket 58mm</label></div>
-          </div>
-          <div class="row">
-            <div class="col"><label>Métodos de pago (coma)</label><input id="payList" placeholder="Efectivo, Tarjeta, Transferencia, Mercado Pago"/></div>
-          </div>
-          <div class="row">
-            <div class="col"><label>Prefijo de folio</label><input id="folioPrefix" placeholder="DG-2025-"/></div>
-            <div class="col"><label>Siguiente folio</label><input id="nextFolio" type="number" min="1"/></div>
-          </div>
-          <div class="row">
-            <div class="col"><label>WhatsApp (10 dígitos)</label><input id="waPhone" placeholder="5643195153"/></div>
-            <div class="col"><label>Mensaje de WhatsApp</label><input id="waMsg" placeholder="Gracias por tu compra..."/></div>
-            <div class="col" style="display:flex;align-items:center"><label><input type="checkbox" id="waQR"/> Mostrar QR en ticket</label></div>
-          </div>
-          <div class="row" style="align-items:center">
-            <div class="col"><label>Logo para tickets</label><input id="bLogo" type="file" accept="image/*"/></div>
-            <div class="col"><label>Vista previa</label><div id="logoPreview"></div></div>
-          </div>
-          <div class="row">
-            <button class="btn" onclick="saveConfig()">Guardar configuración</button>
-            <button class="btn secondary" onclick="respaldoJSON()">Respaldo (JSON)</button>
-            <label class="btn warn" for="impJSON">Restaurar (JSON)</label>
-            <input id="impJSON" class="no-print" type="file" accept=".json" style="display:none" onchange="restaurarJSON(this.files[0])"/>
-          </div>
+        <div class="panel"><h2>⚙️ Configuración</h2>
+          <div class="row"><div class="col"><label>Nombre del negocio</label><input id="bName"/></div><div class="col"><label>Dirección</label><input id="bAddr"/></div></div>
+          <div class="row"><div class="col"><label>Teléfono</label><input id="bPhone"/></div><div class="col"><label>Footer del ticket</label><input id="bFooter"/></div></div>
+          <div class="row"><div class="col"><label>Impuesto (%)</label><input id="bTax" type="number" step="0.01" value="0"/></div><div class="col"><label>Moneda</label><select id="bCurrency"><option>MXN</option><option>USD</option></select></div></div>
+          <div class="row"><div class="col"><label>Prefijo de folio</label><input id="folioPrefix" placeholder="DG-2025-"/></div><div class="col"><label>Siguiente folio</label><input id="nextFolio" type="number" min="1"/></div></div>
+          <div class="row"><button class="btn" onclick="saveConfig()">Guardar configuración</button></div>
         </div>
         <div class="footer">Hecho con 💥 por Dinamita Apps</div>
       </div>
     </div>
   </div>
-
-  <!-- Modal cobro -->
-  <div id="modalCobro" class="modal no-print">
-    <div class="box">
-      <h2>💸 Cobro y métodos de pago (divididos)</h2>
-      <div id="payMethods"></div>
-      <div class="row"><div class="col"><label>Recibido de (cliente opcional)</label><input id="recibidoDe" /></div></div>
-      <div class="row" style="justify-content:flex-end">
-        <button class="btn secondary" onclick="cancelCobro()">Cancelar</button>
-        <button class="btn ok" onclick="confirmarCobro()">Confirmar y generar ticket</button>
-      </div>
-    </div>
-  </div>
-
   <script src="js/app.js"></script>
-</body>
-</html>
+</body></html>
